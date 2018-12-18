@@ -28,6 +28,5 @@ kt.exempt_1.csv : kt.exempt.xls
 kt.exempt_2.csv : kt.exempt.xls
 	in2csv $< --sheet='kt.exempt 2' > $@
 
-
 assessor_exempt.csv : kt.exempt_1.csv kt.exempt_2.csv
 	csvstack $^ | csvsort -c 2 > $@
