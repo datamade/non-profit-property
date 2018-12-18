@@ -1,4 +1,5 @@
 DB = ownership
+VPATH = .:raw
 
 parcels.geojson :
 	esri2geojson http://gis1.cookcountyil.gov/arcgis/rest/services/cookVwrDynmc/MapServer/44 $@
@@ -20,3 +21,13 @@ community_area : CommAreas.shp
 
 exempt_properties.csv :
 	psql -d $(DB) -c "copy (select distinct on (pin14) pin14, address, community from exempt inner join community_area on st_intersects(exempt.wkb_geometry, community_area.wkb_geometry) where area_numbe in ('40', '41', '42')) to stdout with csv header" > $@
+
+kt.exempt_1.csv : kt.exempt.xls
+	in2csv $< > $@
+
+kt.exempt_2.csv : kt.exempt.xls
+	in2csv $< --sheet='kt.exempt 2' > $@
+
+
+assessor_exempt.csv : kt.exempt_1.csv kt.exempt_2.csv
+	csvstack $^ | csvsort -c 2 > $@
